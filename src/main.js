@@ -1,27 +1,31 @@
 const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
+
+const app = express();
+
+app.set('view engine', 'ejs');
+app.set('pages', 'pages');
+
 // routes import
 const adminRoute = require('./routes/admin');
 const shoppingRoute = require('./routes/shop');
 // routes import
 
-const app = express();
 const PORT = 8000;
 
+app.use(bodyParser.urlencoded({ extended: true }));
 //public folder declaration
 app.use(express.static(path.join(__dirname, 'public')));
 //public folder declaration
 
-app.use(bodyParser.urlencoded({ extended: true }));
-
 // routes
-app.use('/admin', adminRoute);
+app.use('/admin', adminRoute.routes);
 app.use(shoppingRoute);
 // routes
 
 app.use((req, res, next) => {
-    res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
+    res.status(404).render('404', { pageTitle: 'Page Not Found' });
 });
 
 app.listen(PORT, () => {
