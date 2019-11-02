@@ -4,13 +4,17 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
+app.set('views', `${__dirname}/views`);
 app.set('view engine', 'ejs');
-app.set('views', 'views');
 
 // routes import
 const adminRoute = require('./routes/admin');
 const shoppingRoute = require('./routes/shop');
 // routes import
+
+// controllers import
+const errorController = require('./controllers/error');
+// controllers import
 
 const PORT = 8000;
 
@@ -20,13 +24,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 //public folder declaration
 
 // routes
-app.use('/admin', adminRoute.routes);
+app.use('/admin', adminRoute);
 app.use(shoppingRoute);
 // routes
 
-app.use((req, res, next) => {
-    res.status(404).render('404', { pageTitle: 'Page Not Found' });
-});
+app.use(errorController.get404);
 
 app.listen(PORT, () => {
     console.log(`Server started on port: ${PORT}`);
