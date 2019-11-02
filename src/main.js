@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const app = express();
 
 app.set('view engine', 'ejs');
-app.set('pages', 'pages');
+app.set('views', 'views');
 
 // routes import
 const adminRoute = require('./routes/admin');
