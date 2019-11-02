@@ -9,6 +9,10 @@ const shoppingRoute = require('./routes/shop');
 const app = express();
 const PORT = 8000;
 
+//public folder declaration
+app.use(express.static(path.join(__dirname, 'public')));
+//public folder declaration
+
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // routes
