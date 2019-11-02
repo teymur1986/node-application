@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const productPath = path.join(path.dirname(process.mainModule.filename), 'data', 'products.js');
+const productPath = path.join(path.dirname(process.mainModule.filename), 'data', 'products.json');
 
 const getProductsFromFile = cb => {
     fs.readFile(productPath, (error, fileContent) => {
@@ -24,6 +24,19 @@ module.exports = class Product {
         this.id = Math.random().toString();
         getProductsFromFile(products => {
             products.push(this);
+            fs.writeFile(productPath, JSON.stringify(products), (error) => {
+                console.log(error);
+            });
+        });
+    }
+
+    static updateById(id) {
+        getProductsFromFile(products => {
+            const productIndex = products.findIndex(p => p.id === id);
+            if (productIndex < 0) {
+                return console.log('product cannot be updated');
+            }
+            products[productIndex] = this;
             fs.writeFile(productPath, JSON.stringify(products), (error) => {
                 console.log(error);
             });
