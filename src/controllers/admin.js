@@ -31,6 +31,7 @@ exports.postAddProduct = (req, res) => {
             id,
         });
         updatedProduct.updateById(id, updatedProduct);
+        res.redirect('/');
     }
 };
 
