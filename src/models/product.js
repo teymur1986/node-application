@@ -14,6 +14,7 @@ const getProductsFromFile = cb => {
 
 module.exports = class Product {
     constructor(data = {}) {
+        this.id = data.id;
         this.title = data.title;
         this.imageURL = data.imageURL;
         this.description = data.description;
@@ -21,25 +22,25 @@ module.exports = class Product {
     }
 
     save() {
-        this.id = Math.random().toString();
         getProductsFromFile(products => {
-            products.push(this);
-            fs.writeFile(productPath, JSON.stringify(products), (error) => {
-                console.log(error);
-            });
-        });
-    }
-
-    static updateById(id) {
-        getProductsFromFile(products => {
-            const productIndex = products.findIndex(p => p.id === id);
-            if (productIndex < 0) {
-                return console.log('product cannot be updated');
+            if (this.id) {
+                const existProductIndex = products.findIndex(p => this.id === p.id);
+                if (existProductIndex >= 0) {
+                    const productsCopy = [...products];
+                    productsCopy[existProductIndex] = this;
+                    fs.writeFile(productPath, JSON.stringify(productsCopy), (error) => {
+                        console.log(error);
+                    });
+                } else {
+                    console.log('Cannot update product, product is undefined.');
+                }
+            } else {
+                this.id = Math.random().toString();
+                products.push(this);
+                fs.writeFile(productPath, JSON.stringify(products), (error) => {
+                    console.log(error);
+                });
             }
-            products[productIndex] = this;
-            fs.writeFile(productPath, JSON.stringify(products), (error) => {
-                console.log(error);
-            });
         });
     }
 
