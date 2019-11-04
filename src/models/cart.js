@@ -28,4 +28,22 @@ module.exports = class Product {
         });
     }
     
+
+    static deleteByProduct(id, productPrice) {
+        fs.readFile(productPath, (error, fileContent) => {
+            if (error) {
+                return;
+            }
+            const updatedCard = { ...JSON.parse(fileContent) };
+            const product = updatedCard.products.find(p => p.id === id);
+            const productQty = product.qty;
+            updatedCard.products = updatedCard.products.filter(p => p.id !== id);
+            updatedCard.totalPrice = updatedCard.totalPrice - productPrice * productQty;
+            fs.writeFile(productPath, JSON.stringify(updatedCard), err => {
+                if (err) {
+                    console.log(err);
+                }
+            });
+        });
+    }
 }
