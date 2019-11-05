@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const Card = require('./cart');
+const Card = require('../cart');
 const productPath = path.join(path.dirname(process.mainModule.filename), 'data', 'products.json');
 
 const getProductsFromFile = cb => {
