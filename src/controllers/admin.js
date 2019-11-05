@@ -25,21 +25,34 @@ exports.postAddProduct = (req, res) => {
 
 exports.postEditProduct = (req, res) => {
     const {title = '', imageURL = '', description = '', price = 0, id = undefined} = req.body;
-    const newProduct = new Product({
-        id,
-        title,
-        description,
-        imageURL,
-        price: parseInt(price || '0'),
-    });
-    newProduct.save();
-    res.redirect('/admin/products');
+    Product.findOne({
+        where: { id }
+    })
+    .then(p => {
+        if (!p) {
+            console.log(`Product with id = ${id}, wasn't defined.`);
+            return;
+        }
+        p.title = title;
+        p.description = description;
+        p.price = price;
+        p.imageURL = imageURL;
+        return p.save();
+    })
+    .then(() => res.redirect('/admin/products'))
+    .catch(e => console.log(e))
 }
 
 exports.postDeleteProduct = (req, res) => {
     const { id } = req.body;
-    Product.deleteById(id);
-    res.redirect('/admin/products');
+    Product.findOne({
+        where: { id }
+    })
+    .then(product => {
+        return product.destroy();
+    })
+    .then(() => res.redirect('/admin/products'))
+    .catch(e => console.log(e));
 }
 
 exports.getEditProduct = (req, res) => {
@@ -48,7 +61,12 @@ exports.getEditProduct = (req, res) => {
         return res.redirect('/');
     }
     const { productId = 0 } = req.params;
-    Product.findById(productId, p => {
+    Product.findOne({
+        where: {
+            id: productId,
+        }
+    })
+    .then(p => {
         if (!p) {
             return res.redirect('/');
         }
@@ -58,7 +76,8 @@ exports.getEditProduct = (req, res) => {
             path: '/admin/products',
             edit,
         });
-    });
+    })
+    .catch(e => console.log(e));
 };
 
 exports.getProducts = (req, res) => {
