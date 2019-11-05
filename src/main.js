@@ -15,6 +15,10 @@ const shoppingRoute = require('./routes/shop');
 const errorController = require('./controllers/error');
 // controllers import
 
+// DB configuration
+const sequelize = require('./utils/database');
+// DB configuration
+
 const PORT = 8000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -29,7 +33,9 @@ app.use(shoppingRoute);
 
 app.use(errorController.get404);
 
-app.listen(PORT, () => {
-    console.log(`Server started on port: ${PORT}`);
-});
+sequelize.sync().then(res => {
+    app.listen(PORT, () => {
+        console.log(`Server started on port: ${PORT}`);
+    });
+}).catch(e => console.log('No connection to DB'));
 

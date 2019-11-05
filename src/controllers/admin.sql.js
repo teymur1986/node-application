@@ -12,15 +12,19 @@ exports.getAddProduct = (req, res) => {
 };
 
 exports.postAddProduct = (req, res) => {
-    const {title = '', imageURL = '', description = '', price = 0} = req.body;
-    Product.create({
+    const {title = '', imageURL = '', description = '', price = 0, id = undefined} = req.body;
+    const newProduct = new Product({
+        id,
         title,
-        imageURL,
         description,
+        imageURL,
         price,
-    }).then(() => {
+    });
+    newProduct.save()
+    .then(() => {
         res.redirect('/');
-    }).catch(e => console.log('Cannot add the product', e));
+    })
+    .catch(e => console.log('Cannot save product', e));
 };
 
 exports.postEditProduct = (req, res) => {
@@ -62,13 +66,12 @@ exports.getEditProduct = (req, res) => {
 };
 
 exports.getProducts = (req, res) => {
-    Product.findAll()
-    .then(products => {
+    const cb = (products) => {
         res.render('admin/products', {
             prods: products,
             pageTitle: 'Admin Products',
             path: '/admin/products',
         });
-    })
-    .catch(e => console.log(e));
+    };
+    Product.fetchAll(cb);
 };

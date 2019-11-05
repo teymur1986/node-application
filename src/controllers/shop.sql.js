@@ -2,59 +2,51 @@ const Product = require('../models/product');
 const Cart = require('../models/cart');
 
 exports.getProducts = (req, res, next) => {
-    Product.findAll()
-    .then(products => {
+    const cb = (products) => {
       res.render('shop/product-list', {
         prods: products,
         pageTitle: 'All Products',
         path: '/products',
       });
-    })
-    .catch(e => console.log(e));
+    };
+    Product.fetchAll(cb);
 };
 
 exports.getProduct = (req, res, next) => {
-    Product.findAll()
-    .then(prods => {
-        res.render('shop/index', {
-            prods,
-            pageTitle: 'Shop',
-            path: '/',
-        });
-    })
-    .catch(e => {
-        res.render('shop/index', {
-            prods: [],
-            pageTitle: 'Shop',
-            path: '/',
-        });
-        console.log(e);
+  const productId = req.params.productId;
+  Product.findById(productId)
+  .then(([product, metadata]) => {
+    res.render('shop/product-details', {
+      product: product.pop() || {},
+      pageTitle: 'Product Detail',
+      path: '/products',
     });
+  })
+  .catch(e => console.log(`Cannot fetch product by id = ${productId}`));
 };
 
 exports.getIndex = (req, res) => {
-    Product.findAll()
-    .then(prods => {
-        res.render('shop/index', {
-            prods,
-            pageTitle: 'Shop',
-            path: '/',
-        });
-    })
-    .catch(e => {
-        res.render('shop/index', {
-            prods: [],
-            pageTitle: 'Shop',
-            path: '/',
-        });
-        console.log(e);
+  Product.fetchAll()
+  .then(([rows, metadata]) => {
+    res.render('shop/index', {
+        prods: rows,
+        pageTitle: 'Shop',
+        path: '/',
     });
+  })
+  .catch(e => {
+    res.render('shop/index', {
+        prods: [],
+        pageTitle: 'Shop',
+        path: '/',
+    });
+    console.log(`Cannot fetch products. ${e}`)
+  });
 }
 
 exports.getCart = (req, res, next) => {
   Cart.getCart(cart => {
-    Product.findAll()
-    .then(products => {
+    Product.fetchAll(products => {
       const cardProducts = [];
       for(product of products) {
         const cartProductData = cart.products.find(p => p.id === product.id);
@@ -67,8 +59,7 @@ exports.getCart = (req, res, next) => {
         path: '/cart',
         products: cardProducts,
       });
-    })
-    .catch(e => console.log(e))
+    });
   });
 }
 
