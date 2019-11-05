@@ -20,11 +20,8 @@ exports.postAddProduct = (req, res) => {
         imageURL,
         price,
     });
-    newProduct.save()
-    .then(() => {
-        res.redirect('/');
-    })
-    .catch(e => console.log('Cannot save product', e));
+    newProduct.save();
+    res.redirect('/');
 };
 
 exports.postEditProduct = (req, res) => {

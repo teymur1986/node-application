@@ -14,34 +14,25 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
   const productId = req.params.productId;
-  Product.findById(productId)
-  .then(([product, metadata]) => {
+  const cb = (product) => {
     res.render('shop/product-details', {
-      product: product.pop() || {},
+      product,
       pageTitle: 'Product Detail',
       path: '/products',
     });
-  })
-  .catch(e => console.log(`Cannot fetch product by id = ${productId}`));
+  };
+  Product.findById(productId, cb);
 };
 
 exports.getIndex = (req, res) => {
-  Product.fetchAll()
-  .then(([rows, metadata]) => {
+  const cb = (products) => {
     res.render('shop/index', {
-        prods: rows,
-        pageTitle: 'Shop',
-        path: '/',
+      prods: products,
+      pageTitle: 'Shop',
+      path: '/',
     });
-  })
-  .catch(e => {
-    res.render('shop/index', {
-        prods: [],
-        pageTitle: 'Shop',
-        path: '/',
-    });
-    console.log(`Cannot fetch products. ${e}`)
-  });
+  };
+  Product.fetchAll(cb);
 }
 
 exports.getCart = (req, res, next) => {
